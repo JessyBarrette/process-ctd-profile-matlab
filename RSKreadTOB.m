@@ -102,7 +102,7 @@ rsk.continuous.samplingPeriod = samplingPeriod;
 
 %% Put back atmospheric pressure component to pressure data since RSKTool expect that
 newChan.values = rsk.data.values(:,getchannelindex(rsk,'sea pressure'))+10.1325;
-rsk = RSKaddchannel(rsk,newChan,'Pressure','dBar'); 
+rsk = RSKaddchannel(rsk,'data',newChan,'channel','Pressure','unit','dBar'); 
 
 %% Extra info
 rsk.dbInfo.version = 'TOBFile';
