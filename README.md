@@ -8,10 +8,14 @@
 # How To
  You can now run the processing tool by sending the following command within MatLab:
 
-``` processProfileData([rawFilePath: rsk,tob, etc]) ```
+``` matlab
+ processProfileData([rawFilePath (String): *.rsk,*.tob, etc]) 
+ ```
 
 A similar function exist specifically for the Caspian Sea:
 
-``` processCaspianProfile([rawFilePath: rsk,tob]) ```
+``` matlab
+ processCaspianProfiles([rawFilePath (String): *.rsk,*.tob]) 
+ ```
 
 A series of corrections and transformations are then applied to the data. If the data is sucessfully processed, an ODV format text format will be ouputted.
