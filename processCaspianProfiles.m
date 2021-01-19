@@ -45,6 +45,7 @@ rsk(end+1) = RSKsmooth(rsk(end),'channel',{'Conductivity','Temperature'},'window
 rsk(end+1) = RSKalignchannel(rsk(end),'channel','Temperature','lag',1/4,'lagunits','seconds','direction','up');
 rsk(end+1) = RSKalignchannel(rsk(end),'channel','Temperature','lag',-1/8,'lagunits','seconds','direction','down');
 rsk(end+1) = RSKalignchannel(rsk(end),'channel','DO_mg','lag',-4,'lagunits','seconds'); 
+rsk(end+1) = RSKalignchannel(rsk(end),'channel','Dissolved Oxygen','lag',-4,'lagunits','seconds'); % Seem affected by salinity spikes
 
 % Derive Variables
 rsk(end+1) = RSKderivesalinity(rsk(end)); %The Conductivity data isn't in mS/cm, I won't do any recompute it since it will overwrite the value
