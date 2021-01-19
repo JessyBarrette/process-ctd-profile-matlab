@@ -39,21 +39,16 @@ rsk(end+1) = RSKtimeseries2profiles(rsk(end));
 rawRSK = rsk(end);
 
 % Smooth Data
-rsk(end+1) = RSKsmooth(rsk(end),'channel',{'Conductivity','Temperature'},'windowLength',3);
+rsk(end+1) = RSKsmooth(rsk(end),'channel',{'Conductivity','Temperature'},'windowLength',5);
 
-% Align Data 
+% Align Data (just an example with Oxygen)
 rsk(end+1) = RSKalignchannel(rsk(end),'channel','Temperature','lag',1/4,'lagunits','seconds','direction','up');
 rsk(end+1) = RSKalignchannel(rsk(end),'channel','Temperature','lag',-1/8,'lagunits','seconds','direction','down');
-rsk(end+1) = RSKalignchannel(rsk(end),'channel','DO_mg','lag',-4,'lagunits','seconds'); 
-rsk(end+1) = RSKalignchannel(rsk(end),'channel','Dissolved Oxygen','lag',-4,'lagunits','seconds'); % Seem affected by salinity spikes
-
-% First try to match chl_a up/down and pH
-rsk(end+1) = RSKalignchannel(rsk(end),'channel','Chl_A','lag',-1,'lagunits','seconds');
-rsk(end+1) = RSKalignchannel(rsk(end),'channel','pH','lag',-6,'lagunits','seconds');
+rsk(end+1) = RSKalignchannel(rsk(end),'channel','DO_mg','lag',-4,'lagunits','seconds'); % ~10s seems to be matching up and downcast 
+rsk(end+1) = RSKalignchannel(rsk(end),'channel','Dissolved Oxygen','lag',-3,'lagunits','seconds'); % ~10s seems to be matching up and downcast 
 
 % Derive Variables
 rsk(end+1) = RSKderivesalinity(rsk(end)); %The Conductivity data isn't in mS/cm, I won't do any recompute it since it will overwrite the value
-% Could derive more variables.
 
 % Loop average (remove loop the in profile)
 rsk(end+1) = RSKremoveloops(rsk(end),'threshold',.25);
@@ -62,16 +57,31 @@ preBin=rsk(end);
 % Bin average
 maxSeaPressure = max(ceil(rsk(1).data.values(:,getchannelindex(rsk(1),'sea pressure'))));
 rsk(end+1) = RSKbinaverage(rsk(end),'direction','down','binBy','sea pressure','boundary',[-.5,maxSeaPressure]); % by default it creates 1m bins
-rsk(end+1) = RSKbinaverage(rsk(end),'direction','up','binBy','sea pressure','boundary',[0,maxSeaPressure+.5]); % by default it creates 1m bins
+rsk(end+1) = RSKbinaverage(rsk(end),'direction','up','binBy','sea pressure','boundary',[-.5,maxSeaPressure]); % by default it creates 1m bins
 
 % Plot Result
-% Just present CTD and DO data
-[hf_profile,hf_timeseries] = figure.plotProfile({rawRSK,preBin,rsk(end)},{'Temperature','Salinity','Conductivity','Dissolved Oxygen','DO_mg'},{'raw','preBin','final'},{'r','b','k'});
-print(hf_profile,fullfile(path,[file,'_CTD+DO_processProfile']),'-r300','-dpng')
-print(hf_timeseries,fullfile(path,[file,'_CTD+DO_processTimeSeries']),'-r300','-dpng')
+close all
+figure.plotRawVsProcess(rawRSK,rsk(end),{'Temperature','Salinity','Conductivity','Dissolved Oxygen','DO_mg'})
+figure.plotProfile({rawRSK,preBin,rsk(end)},{'Temperature','Salinity','Conductivity','Dissolved Oxygen','DO_mg'},{'raw','preBin','final'})
+
+% Review Time series
+spChan = getchannelindex(rsk(1),'sea pressure');
+figure
+plot(rsk(1).data.tstamp,rsk(1).data.values(:,spChan),'r')
+hold on
+for jj=1:length(rsk(end).data)
+    if strcmp(rsk(end).data(jj).direction,'up')
+        color='g';
+    elseif strcmp(rsk(end).data(jj).direction,'down')
+        color = 'k';
+    else
+        color = [.4 .4 .4];
+    end
+    plot(rsk(end).data(jj).tstamp,rsk(end).data(jj).values(:,spChan),['.',color])
+end
 
 %Write processed data!
-RSKplotprofiles(rsk(end)); % Let's show the all resulting plots
+%RSKplotprofiles(rsk(end)); % Let's show the resulting plots
 RSK2ODV(rsk(end)); % ODV is a good format to use
 RSK2CSV(rsk(end)); % Could be useful to
 end

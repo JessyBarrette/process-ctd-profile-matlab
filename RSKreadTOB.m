@@ -22,7 +22,9 @@ short_name = strtrim(regexp(char(variableLines(2)),'[^;][\w]+','match'));
 long_name = short_name;
 long_name(strcmp(short_name,'Temp'))={'Temperature'};
 long_name(strcmp(short_name,'Press'))={'sea pressure'};
-long_name(strcmp(short_name,'rCond'))={'Conductivity'};
+long_name(strcmp(short_name,'Cond'))={'Conductivity'};
+long_name(strcmp(short_name,'rCond'))={'RAW Conductivity'};
+long_name(strcmp(short_name,'CAP25'))={'Specific Conductance'};
 long_name(strcmp(short_name,'Oxygn'))={'Dissolved Oxygen'};
 long_name(strcmp(short_name,'Turb'))={'Turbidity'};
 long_name(strcmp(short_name,'SALIN'))={'Salinity'};
@@ -47,7 +49,8 @@ data = readtable(inFile,'delimiter',' ','HeaderLines',LastHeaderLine,...
     'ReadVariableNames',0,'FileType','text','MultipleDelimsAsOne',1);
 
 % Get date and time data and convert to datenum
-data(:,4) = regexprep(data{:,4},'È.Ù','AM'); %We will presume that È.Ù
+data(:,4) = regexprep(data{:,4},'È.Ù','AM'); %We will presume that È.Ù is AM
+data(:,4) = regexprep(data{:,4},'Þ.Ù','AM'); %We will presume that Þ.Ù is AM 
 rsk.data.tstamp = datenum(char(char(strcat(data{:,2},{' '},data{:,3},' ',data{:,4}))),'dd/mm/yyyy HH:MM:SS PM');
 
 % Get Data 
