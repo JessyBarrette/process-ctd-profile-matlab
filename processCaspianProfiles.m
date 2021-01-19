@@ -33,8 +33,10 @@ rsk.regionCast = [];
 
 %% Run CTD Processing
 % Zero Depth near the surface
-rsk(end) = RSKderivedepth(rsk(end),'latitude',metadata.latitude);
-rsk(end) = RSKderivevelocity(rsk(end));
+rsk(end+1) = RSKderivedepth(rsk(end),'latitude',metadata.latitude);
+rsk(end+1) = RSKderivevelocity(rsk(end));
+rsk(end+1) = RSKtimeseries2profiles(rsk(end));
+rawRSK = rsk(end);
 
 % Smooth Data
 rsk(end) = RSKsmooth(rsk,'channel',{'Conductivity','Temperature'},'windowLength',3);
@@ -50,10 +52,16 @@ rsk(end) = RSKalignchannel(rsk,'channel','Dissolved Oxygen','lag',-9,'lagunits',
 rsk(end) = RSKtimeseries2profiles(rsk(end));
 
 % Loop average (remove loop the in profile)
-rsk(end) = RSKremoveloops(rsk(end),'threshold',.25);
+rsk(end+1) = RSKremoveloops(rsk(end),'threshold',.25);
+preBin=rsk(end);
 
 % Bin average
 rsk(end) = RSKbinaverage(rsk(end)); % by default it creates 1m bins
+% Plot Result
+% Just present CTD and DO data
+[hf_profile,hf_timeseries] = figure.plotProfile({rawRSK,preBin,rsk(end)},{'Temperature','Salinity','Conductivity','Dissolved Oxygen','DO_mg'},{'raw','preBin','final'},{'r','b','k'});
+print(hf_profile,fullfile(path,[file,'_CTD+DO_processProfile']),'-r300','-dpng')
+print(hf_timeseries,fullfile(path,[file,'_CTD+DO_processTimeSeries']),'-r300','-dpng')
 
 %Write processed data!
 RSK2ODV(rsk(end)); % ODV is a good format to use
