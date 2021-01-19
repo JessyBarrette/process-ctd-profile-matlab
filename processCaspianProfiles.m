@@ -47,6 +47,10 @@ rsk(end+1) = RSKalignchannel(rsk(end),'channel','Temperature','lag',-1/8,'laguni
 rsk(end+1) = RSKalignchannel(rsk(end),'channel','DO_mg','lag',-4,'lagunits','seconds'); 
 rsk(end+1) = RSKalignchannel(rsk(end),'channel','Dissolved Oxygen','lag',-4,'lagunits','seconds'); % Seem affected by salinity spikes
 
+% First try to match chl_a up/down and pH
+rsk(end+1) = RSKalignchannel(rsk(end),'channel','Chl_A','lag',-1,'lagunits','seconds');
+rsk(end+1) = RSKalignchannel(rsk(end),'channel','pH','lag',-6,'lagunits','seconds');
+
 % Derive Variables
 rsk(end+1) = RSKderivesalinity(rsk(end)); %The Conductivity data isn't in mS/cm, I won't do any recompute it since it will overwrite the value
 % Could derive more variables.
