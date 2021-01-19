@@ -56,7 +56,10 @@ rsk(end+1) = RSKremoveloops(rsk(end),'threshold',.25);
 preBin=rsk(end);
 
 % Bin average
-rsk(end) = RSKbinaverage(rsk(end)); % by default it creates 1m bins
+maxSeaPressure = max(ceil(rsk(1).data.values(:,getchannelindex(rsk(1),'sea pressure'))));
+rsk(end+1) = RSKbinaverage(rsk(end),'direction','down','binBy','sea pressure','boundary',[-.5,maxSeaPressure]); % by default it creates 1m bins
+rsk(end+1) = RSKbinaverage(rsk(end),'direction','up','binBy','sea pressure','boundary',[0,maxSeaPressure+.5]); % by default it creates 1m bins
+
 % Plot Result
 % Just present CTD and DO data
 [hf_profile,hf_timeseries] = figure.plotProfile({rawRSK,preBin,rsk(end)},{'Temperature','Salinity','Conductivity','Dissolved Oxygen','DO_mg'},{'raw','preBin','final'},{'r','b','k'});
@@ -64,11 +67,7 @@ print(hf_profile,fullfile(path,[file,'_CTD+DO_processProfile']),'-r300','-dpng')
 print(hf_timeseries,fullfile(path,[file,'_CTD+DO_processTimeSeries']),'-r300','-dpng')
 
 %Write processed data!
+RSKplotprofiles(rsk(end)); % Let's show the all resulting plots
 RSK2ODV(rsk(end)); % ODV is a good format to use
 RSK2CSV(rsk(end)); % Could be useful to
-RSKplotprofiles(rsk(end)); % Let's show the resulting plots
 end
-
-
-
-
