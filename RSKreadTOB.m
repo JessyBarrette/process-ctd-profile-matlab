@@ -49,7 +49,8 @@ data = readtable(inFile,'delimiter',' ','HeaderLines',LastHeaderLine,...
     'ReadVariableNames',0,'FileType','text','MultipleDelimsAsOne',1);
 
 % Get date and time data and convert to datenum
-data(:,4) = regexprep(data{:,4},'�.�','AM'); %We will presume that �.�
+data(:,4) = regexprep(data{:,4},'�.�','AM'); %We will presume that �.� is AM
+data(:,4) = regexprep(data{:,4},'�.�','AM'); %We will presume that �.� is AM 
 rsk.data.tstamp = datenum(char(char(strcat(data{:,2},{' '},data{:,3},' ',data{:,4}))),'dd/mm/yyyy HH:MM:SS PM');
 
 % Get Data 
