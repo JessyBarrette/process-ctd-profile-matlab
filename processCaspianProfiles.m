@@ -39,17 +39,16 @@ rsk(end+1) = RSKtimeseries2profiles(rsk(end));
 rawRSK = rsk(end);
 
 % Smooth Data
-rsk(end) = RSKsmooth(rsk,'channel',{'Conductivity','Temperature'},'windowLength',3);
+rsk(end+1) = RSKsmooth(rsk(end),'channel',{'Conductivity','Temperature'},'windowLength',3);
 
-% Align Data (just an example with Oxygen)
-rsk(end) = RSKalignchannel(rsk,'channel','Temperature','lag',1/3,'lagunits','seconds');
-rsk(end) = RSKalignchannel(rsk,'channel','Dissolved Oxygen','lag',-9,'lagunits','seconds'); % ~10s seems to be matching up and downcast 
+% Align Data 
+rsk(end+1) = RSKalignchannel(rsk(end),'channel','Temperature','lag',1/4,'lagunits','seconds','direction','up');
+rsk(end+1) = RSKalignchannel(rsk(end),'channel','Temperature','lag',-1/8,'lagunits','seconds','direction','down');
+rsk(end+1) = RSKalignchannel(rsk(end),'channel','DO_mg','lag',-4,'lagunits','seconds'); 
 
 % Derive Variables
-%rsk(end) = RSKderivesalinity(rsk(end)); # The Conductivity data isn't in mS/cm, I won't do any recompute it since it will overwrite the value
-
-% Split up/down casts
-rsk(end) = RSKtimeseries2profiles(rsk(end));
+rsk(end+1) = RSKderivesalinity(rsk(end)); %The Conductivity data isn't in mS/cm, I won't do any recompute it since it will overwrite the value
+% Could derive more variables.
 
 % Loop average (remove loop the in profile)
 rsk(end+1) = RSKremoveloops(rsk(end),'threshold',.25);
